@@ -26,10 +26,11 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # Allow override via environment variable, else default to local file in same folder
 DB_PATH = os.environ.get("SIM_DB_PATH", os.path.join(BASE_DIR, "simulation_results.db"))
 
-# Load allowed API keys from CSV
+# Load allowed API keys from CSV and/or environment variable
 API_KEYS = set()
 API_KEY_FILE = os.path.join(BASE_DIR, "api_keys.csv")
 
+# Option 1: Load from CSV if present
 if os.path.exists(API_KEY_FILE):
     with open(API_KEY_FILE, newline="") as csvfile:
         reader = csv.DictReader(csvfile)
@@ -38,6 +39,17 @@ if os.path.exists(API_KEY_FILE):
                 API_KEYS.add(row["api_key"])
 else:
     print(f"⚠ Warning: API key file not found at {API_KEY_FILE}")
+
+# Option 2: Load from environment variable (comma-separated keys)
+env_keys = os.environ.get("API_KEYS")
+if env_keys:
+    for key in env_keys.split(","):
+        key = key.strip()
+        if key:
+            API_KEYS.add(key)
+
+if not API_KEYS:
+    print("⚠ Warning: No API keys loaded from CSV or environment variable.")
 
 API_KEY_NAME = "x-api-key"
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
