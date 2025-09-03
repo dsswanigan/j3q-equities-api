@@ -1,4 +1,3 @@
 fastapi
 uvicorn
-sqlite3  # comes with Python, so not strictly needed
 pandas   # if you use it in your API
